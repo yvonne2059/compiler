@@ -32,8 +32,7 @@ SymbolTable *table;
 
 %}
 
-DELIMITER               ([,:.;()[]{}])
-ARITHMETIC              ([-+*/%])
+
 RELATIONAL              ([<>=])
 IDENTIFIER              ([A-Za-z_][0-9A-Za-z_]*)
 DIGIT                   ([0-9]+)
@@ -41,16 +40,29 @@ INTEGERC                 ({DIGIT})
 REAL                    ([-+]?{DIGIT}\.{DIGIT}?([Ee](-+)?{DIGIT})?)
 STRING                  (\"(\"\"|[^"\n])*\")
 SINGLE_COMMENT          (\/\/[^\n]*)
-BEGIN_COMMENT           (\*)
-END_COMMENT             (\*)
+
 
 %x COMMENT
 
 %%
 
+"("                    {token('(');}
+")"                    {token(')');}
+","                    {token(',');}
+"."                    {token('.');}
+":"                    {token(':');}
+";"                    {token(';');}
+"["                    {token('[');}
+"]"                    {token(']');}
+"{"                    {token('{');}
+"}"                    {token('}');}
 
-{DELIMITER}            { tokenChar(yytext[0]); }
-{ARITHMETIC}            { tokenChar(yytext[0]); }
+"+"                    {token('+');}
+"-"                    {token('-');}
+"*"                    {token('*');}
+"/"                    {token('/');}
+"%"                    {token('%');}
+
 {RELATIONAL}            { tokenChar(yytext[0]); }
 
 
@@ -126,7 +138,7 @@ END_COMMENT             (\*)
   /* comment */
 {SINGLE_COMMENT}        { LIST; }
 
-{BEGIN_COMMENT}         {
+"*"         {
                           LIST;
                           BEGIN COMMENT;
                         }
@@ -142,7 +154,7 @@ END_COMMENT             (\*)
                           buf[0] = '\0';
                         }
 
-<COMMENT>{END_COMMENT}  {
+<COMMENT>"*"  {
                           LIST;
                           BEGIN INITIAL;
                         }
